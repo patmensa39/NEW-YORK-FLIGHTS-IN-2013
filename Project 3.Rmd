@@ -1,0 +1,272 @@
+---
+title: "Project 3"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+date: "October 4th 2020"
+theme: cerulean
+---
+
+
+## Name: Project 3 
+
+### This project deals with ways of handling string (combining and spliting them), handling factors(arranging them alphabetically and by levels), Times and dates and working with forcats.
+
+### Splittig my name with dots.
+```{r}
+strsplit("Patrick.Senyo.Mensah", split = "[.]")
+
+### This can also be separated by any letter in the name. Eg. Splitting my name with the 'y'
+strsplit("Patrick.Senyo.Mensah", split = "y")
+ 
+### with 'e'
+strsplit("Patrick.Senyo.Mensah", split = "e")
+```
+
+### Combining my name with with the #paste function.
+```{r}
+paste("Patrick",  "Senyo", "Mensah")
+
+### By separating them with sep.
+paste("Patrick",  "Senyo", "Mensah", sep = "_")
+```
+
+### The string package is contained in tidyverse
+
+```{r}
+library(tidyverse)
+### Combining names using str_c in tidyverse. str_c is vectorized.
+str_c("Philant", c("Sammy", "Clement", "Wisdom", "Ephraim"), "Osman", sep = "_")
+str_c("Philant", c("Sammy", "Clement", "Wisdom", "Ephraim"), c("Nash", "Osaman","Vicent"), "Osman", sep="_")
+
+### Collapsing the above to a single string.
+str_c("Philant", c("Sammy", "Clement", "Wisdom", "Ephraim"), "Osman", collapse = "")
+```
+
+### Finding the length of a string using the str_lenth function.
+```{r}
+### Finding the first seven characters from Philantropist.
+str_sub("Philantropist", 1,7)
+### Counting from backwards by finding the last seven characters from Philantropist.
+str_sub("Philantropist", -7,-1)
+```
+
+### Splitting functions with str_split. This does the same thing as strsplit, execept that str_split gives you the lists. 
+```{r}
+str_split("www.patrickmensah.com", pattern = "[.]")
+str_split(c("My full name is Patrick Senyo Mensah", "My nickname is Philant"), pattern = " ")
+### Adding options.
+str_split(c("My full name is Patrick Senyo Mensah", "My nickname is Philant"), pattern = " ", simplify = TRUE)
+```
+
+### Splitting strings with the boundry function. Here, each charater is separated by each 'word'
+```{r}
+str_split("My full name is Patrick Senyo Mensah. My nickname is Philant", boundary("word"))[[1]]
+```
+
+### Sorting strings. 
+```{r}
+### Arranging alphabetically.
+str_sort(c("Phialnt", "Osman", "Osaman", "Clement", "Wisdom"))
+### Arranging by the order of the number.
+str_order(c("Phialnt", "Osman", "Osaman", "Clement", "Wisdom"))
+```
+
+
+## Factors
+```{r}
+### Days of the week in factors.
+days<- c("Monday", "Tuesday","Sunday", "Wednesday", "Thursday", "Friday", "Saturday","Thursday")
+### Sorting the days alphabetically.
+sort(days)
+### Sorting by using factors.
+week.levels<- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+week<- factor(days, levels = week.levels)
+sort(week)
+```
+
+```{r}
+### Months of the year.
+x1<- c("Mar", "Jan", "Oct", "Apr")
+### Sorting the months
+sort(x1)
+### Arranging according to the months in the year using the levels below.
+month.levels<-c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+month<-factor(x1, levels = month.levels)
+sort(month)
+```
+
+## Time and dates
+```{r}
+### Date and times only uses lubridate.
+### time only uses hms
+###install.packages("lubridate")
+###install.packages("hms")
+```
+
+```{r}
+### loading the packages
+### y means year, m means month and d means day.
+library(lubridate)
+library(hms)
+mdy("October 4th, 2020")
+dmy("4-October-2020")
+ymd(20201004)
+```
+
+```{r}
+### Adding time to the dates
+### with hour, minute and second
+ymd_hms("2020-10-04 23:14:50")
+### with hour and minute
+ymd_hm("2020-10-04 23:14")
+
+### specifying the dates and time with timezones
+ymd(20201004, tz= "GMT")
+ymd(20201004, tz= "Asia/Singapore")
+ymd(20201004, tz= "America/New_York")
+```
+
+### Getting dates and time from separate variables using make_date() and make_datetime().
+```{r}
+library(tidyverse)
+library(lubridate)
+```
+
+```{r}
+### Working with New York City flights dataset already in r.
+library(nycflights13)
+flights %>% select(year, month, day, hour, minute)
+flights1<- flights %>% select(year, month, day, hour, minute)
+### Creating a new variable 'departure' from  the above five variables.
+flights1 %>% mutate(departure= make_datetime(year, month, day, hour, minute))
+```
+
+```{r}
+### Creating a frequency plot for the number of departing flights 1.
+flights1 %>% mutate(departure= make_datetime(year, month, day, hour, minute)) %>% ggplot(aes(departure)) + geom_freqpoly(binwidth=86400) #86400 seconds= 1 day
+```
+
+```{r}
+### Keeping only flights with departure times earlier than 20130102.
+flights1 %>% mutate(departure= make_datetime(year, month, day, hour, minute)) %>% filter(departure< ymd(20130102)) %>% ggplot(aes(departure)) + geom_freqpoly(binwidth=600) # 600 seconds = 10 minutes.
+```
+
+```{r}
+### Keeping only flights with departure times after 20130102.
+flights1 %>% mutate(departure= make_datetime(year, month, day, hour, minute)) %>% filter(departure> ymd(20130102)) %>% ggplot(aes(departure)) + geom_freqpoly(binwidth=600) # 600 seconds = 10 minutes.
+```
+
+```{r}
+### Extracting date and time. 
+as_date(390000)
+as_datetime(390000)
+datetime<-ymd_hms("3037-10-04 12:24:54")
+datetime
+month(datetime)
+mday(datetime)
+yday(datetime)
+wday(datetime)
+wday(datetime)
+### Showing by word
+wday(datetime, label = TRUE)
+### with no abbreviation. 
+wday(datetime, label = TRUE, abbr = FALSE)
+
+### Converting weeks to seconds.
+dweeks(12)
+### months to seconds
+dmonths(12)
+### years to seconds
+dyears(14)
+
+### Addition and multiplication of duration
+### They all covert to seconds
+dyears(4) + dweeks(5)
+dyears(4) + dweeks(5) +ddays(6)
+3*dyears(4)
+
+### tomorrow
+tomorrow<- today()+ddays(1)
+tomorrow
+### last year
+last.year<- today()-dyears(1)
+last.year
+### Next five years
+next.5.years<-today()+dyears(5)
+next.5.years
+
+## Dealing with periods.
+one.pm<- ymd_hms("2016-03-12 13:00:00", tz="America/New_York")
+one.pm
+one.pm + ddays(1)
+one.pm + days(1)
+
+### Intervals
+dyears(1)/ddays(1)
+```
+
+```{r}
+## Working with forcats which is a datase in r. 
+library(forcats)
+gss_cat
+```
+
+```{r}
+### Counting by race.
+gss_cat%>% count(race)
+### Creating a bargraph for the count by race.
+ggplot(gss_cat,aes(race)) + geom_bar()
+```
+
+```{r}
+### Grouping by religion to compute the mean age and number of hours spent on watching tv.
+religion.summary<- gss_cat %>% group_by(relig) %>% summarise(age=mean(age, na.rm = TRUE), tvhours=mean(tvhours, na.rm = TRUE), n=n())
+religion.summary
+
+### Making a plot with the above data.
+ggplot(religion.summary, aes(tvhours, relig)) + geom_point()
+```
+
+```{r}
+### Reordering the religion by the number of tv hours.
+religion.summary %>% mutate(relig=fct_reorder(relig, tvhours)) %>% ggplot(aes(tvhours, relig)) + geom_point()
+```
+
+```{r}
+### Reordering the levels as a factor.
+levels(gss_cat$rincome)
+levels(gss_cat$marital)
+levels(gss_cat$race)
+```
+
+```{r}
+### Reordering for a particular feedback to appear first.
+levels(fct_relevel(gss_cat$rincome, "Not applicable"))
+```
+
+```{r}
+### Other reordering.
+marital.by.age<- gss_cat %>% filter(!is.na(age)) %>% count(age, marital) %>% group_by(age) %>% mutate(prop= n / sum(n))
+marital.by.age
+### Creating a plot with the above line.
+ggplot(marital.by.age,aes(age, prop, colour=marital)) + geom_line(na.rm = TRUE)
+```
+
+```{r}
+### Reordering levels by frequency with fct_infreq().
+gss_cat %>% mutate(marital=marital %>% fct_infreq() %>% fct_rev()) %>% ggplot(aes(marital)) + geom_bar()
+```
+
+```{r}
+### Collasping levels with fct_collapse().
+gss_cat %>% mutate(partyid=fct_collapse(partyid, Rep = c("Strong republican", "Not str republican"), Dem = c("Strong democrat", "Not str democrat"), Ind = c("Ind,near rep", "Independent", "Ind,near dem"), Other = c("No answer", "Don't know", "Other party"))) %>% count(partyid)
+```
+
+```{r}
+### Lumping groups (combine other smaller groups) together with fct_lump.
+### By retaining 5 groups in 'religion'.
+gss_cat %>% mutate(relig= fct_lump(relig, n=5)) %>% count(relig, sort = TRUE)
+```
+
